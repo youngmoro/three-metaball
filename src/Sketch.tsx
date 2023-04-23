@@ -2,11 +2,10 @@ import { Sky } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import GUI from "lil-gui";
 import React, { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
-import Element from "./Element";
+import Metaball from "./Metaball";
 
 export const Sketch = () => {
-  const { scene, camera, gl } = useThree();
+  const { scene } = useThree();
   const [radius, setRadius] = useState(1);
 
   const params = {
@@ -14,7 +13,7 @@ export const Sketch = () => {
   };
 
   const guiRef = useRef<GUI>();
-  const elementRef = useRef<Element>();
+  const elementRef = useRef<Metaball>();
 
   useEffect(() => {
     elementRef.current?.update(radius);
@@ -23,7 +22,7 @@ export const Sketch = () => {
       .add(params, "size", 1, 10)
       .onChange((value: number) => setRadius(value));
     guiRef.current = gui;
-    elementRef.current = new Element(scene, radius);
+    elementRef.current = new Metaball(scene, radius);
   }, []);
 
   useEffect(() => {

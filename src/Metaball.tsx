@@ -2,7 +2,7 @@ import * as THREE from "three";
 import frag from "./shader/frag.glsl?raw";
 import vert from "./shader/vert.glsl?raw";
 
-export default class Element {
+export default class Metaball {
   scene: THREE.Scene;
   mesh: THREE.Mesh;
   geo: THREE.SphereGeometry;
