@@ -16,33 +16,20 @@ export const Sketch = () => {
   const elementRef = useRef<Metaball>();
 
   useEffect(() => {
-    elementRef.current?.update(radius);
+    // elementRef.current?.update(radius);
     const gui = new GUI();
-    gui
-      .add(params, "size", 1, 10)
-      .onChange((value: number) => setRadius(value));
+    gui.add(params, "size", 0, 4).onChange((value: number) => setRadius(value));
     guiRef.current = gui;
-    elementRef.current = new Metaball(scene, radius);
+    elementRef.current = new Metaball(scene);
   }, []);
 
-  useEffect(() => {
-    elementRef.current?.update(radius);
-  }, [radius]);
-
-  // const geo = new THREE.SphereGeometry(radius);
-  // const mat = new THREE.MeshBasicMaterial({
-  //   color: 0xff00ff,
-  //   wireframe: true,
-  // });
+  // useEffect(() => {
+  //   elementRef.current?.update();
+  // }, [radius]);
 
   return (
     <>
       <Sky />
-      {/* <mesh> */}
-      {/* <sphereGeometry /> */}
-      {/* <meshStandardMaterial wireframe={true} /> */}
-      {/* </mesh> */}
-      {/* <mesh geometry={geo} material={mat} /> */}
     </>
   );
 };
