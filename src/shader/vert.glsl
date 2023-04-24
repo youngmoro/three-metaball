@@ -1,6 +1,5 @@
-precision mediump float;
+precision highp float;
 
-attribute vec3 position;
 attribute float vertexId;
 
 uniform float time;
@@ -8,15 +7,11 @@ uniform vec3 numCells;
 uniform vec3 cellSize;
 uniform sampler2D triTableTexture;
 
-uniform float effectValue;
+// uniform float effectValue;
 uniform float smoothUnionValue;
 
-uniform mat4 modelViewMatrix;
-uniform mat3 normalMatrix;
-uniform mat4 projectionMatrix;
 uniform vec4 randomValues[NUM_SPHERES];
 
-varying vec3 vPos;
 varying vec3 vNormal;
 varying float vDiscard;
 
@@ -176,6 +171,7 @@ void main(){
     vDiscard = 1.0;
   } else if (edgeIndex == 0.0) {
     pos = interpolate(c0, c1, v0, v1);
+    pos = position;
   } else if (edgeIndex == 1.0) {
     pos = interpolate(c1, c2, v1, v2);
   } else if (edgeIndex == 2.0) {
@@ -203,10 +199,8 @@ void main(){
   vNormal = getNormal(pos);
 
   // エフェクト
-  vec3 effectSize = cellSize * 1.5;
-  pos = mix(pos, floor(pos / effectSize + 0.5) * effectSize, effectValue);
-
-  vPos = pos;
+//   vec3 effectSize = cellSize * 1.5;
+//   pos = mix(pos, floor(pos / effectSize + 0.5) * effectSize, effectValue);
 
   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
 }

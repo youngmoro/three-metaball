@@ -216,6 +216,7 @@ export default class Metaball {
   geo: THREE.BufferGeometry = new THREE.BufferGeometry();
   mat: THREE.ShaderMaterial;
 
+  time: number = 0;
   numMarchingSegments: number = 30; // セルの分割数
   margingSpaceSize: number = 64; // マーチングキューブのスペースのサイズ
   numSpheres: number = 6; // メタボールの数
@@ -232,7 +233,7 @@ export default class Metaball {
     this.triTableTexture.minFilter = THREE.NearestFilter;
     this.triTableTexture.magFilter = THREE.NearestFilter;
 
-    this.mat = new THREE.RawShaderMaterial({
+    this.mat = new THREE.ShaderMaterial({
       fragmentShader: frag,
       vertexShader: vert,
       side: THREE.DoubleSide,
@@ -246,11 +247,11 @@ export default class Metaball {
             this.sphereColor[2] / 255
           ),
         },
-        time: { value: 100 },
-        effectValue: { value: 0 },
+        time: { value: 0 },
+        effectValue: { value: 0.5 },
         smoothUnionValue: { value: this.smoothUnionValue },
-        numCells: { value: new THREE.Vector3(0, 0, 0) },
-        cellSize: { value: new THREE.Vector3(0, 0, 0) },
+        numCells: { value: new THREE.Vector3(30, 30, 30) },
+        cellSize: { value: new THREE.Vector3(64 / 30, 64 / 30, 64 / 30) },
         randomValues: { value: [] },
       },
     });
@@ -264,21 +265,13 @@ export default class Metaball {
 
   // マーチングキューブ空間のアップデート
   updateMargingCubesSpace() {
-    const marchingSpace = new THREE.Vector3(
-      this.margingSpaceSize,
-      this.margingSpaceSize,
-      this.margingSpaceSize
-    );
     const numCells = new THREE.Vector3(
       this.numMarchingSegments,
       this.numMarchingSegments,
       this.numMarchingSegments
     );
-    const cellSize = new THREE.Vector3(
-      marchingSpace.x / numCells.x,
-      marchingSpace.y / numCells.y,
-      marchingSpace.z / numCells.z
-    );
+    const size = this.margingSpaceSize / this.numMarchingSegments;
+    const cellSize = new THREE.Vector3(size, size, size);
 
     const numVertices = numCells.x * numCells.y * numCells.z * 15; // 1セルの頂点の数は15個
 
@@ -289,15 +282,21 @@ export default class Metaball {
     const vertices = [];
     const vertexIndices = [];
     for (let i = 0; i < numVertices; i++) {
-      vertices.push(0);
-      vertices.push(0);
-      vertices.push(0);
+      vertices.push(Math.random());
+      vertices.push(Math.random());
+      vertices.push(Math.random());
+      // vertices.push(0);
+      // vertices.push(0);
+      // vertices.push(0);
+
       vertexIndices.push(i);
     }
+
     this.geo.setAttribute(
       "position",
       new THREE.BufferAttribute(new Float32Array(vertices), 3)
     );
+
     this.geo.setAttribute(
       "vertexId",
       new THREE.BufferAttribute(new Float32Array(vertexIndices), 1)
@@ -322,5 +321,10 @@ export default class Metaball {
     this.mat.defines.NUM_SPHERES = this.numSpheres;
     this.mat.uniforms.randomValues.value = randomValues;
     this.mat.needsUpdate = true;
+  }
+
+  update() {
+    this.time += 1;
+    this.mat.uniforms.time.value = this.time;
   }
 }
