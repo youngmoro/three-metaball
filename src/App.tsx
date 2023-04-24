@@ -1,4 +1,4 @@
-import { OrbitControls, Sky } from "@react-three/drei";
+import { TrackballControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Sketch } from "./Sketch";
 
@@ -14,7 +14,7 @@ function App() {
       <div className="canvas">
         <Canvas className="canvas">
           <Sketch />
-          <OrbitControls />
+          <TrackballControls />
         </Canvas>
       </div>
     </div>
