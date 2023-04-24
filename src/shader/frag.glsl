@@ -1,9 +1,7 @@
 precision highp float;
 
-uniform vec3 cameraPosition;
 uniform vec3 sphereColor;
 
-varying vec3 vPos;
 varying vec3 vNormal;
 varying float vDiscard;
 
@@ -13,14 +11,9 @@ void main(void) {
   if (vDiscard == 1.0) {
     discard;
   } else {
-    vec3 n = normalize(vNormal);
+    vec3 normal = normalize(vNormal);
 
-    vec3 light = normalize(LIGHT_DIR);
-    vec3 eye = normalize(cameraPosition - vPos);
-    vec3 halfLE = normalize(light + eye);
-    float diffuse = clamp(dot(n, light), 0.3, 1.0);
-    float specular = pow(clamp(dot(n, halfLE), 0.0, 1.0), 50.0);
-    vec3 color = sphereColor * vec3(diffuse) + vec3(specular);
+    vec3 color = sphereColor * max(0.0, dot(LIGHT_DIR, normal));
     gl_FragColor = vec4(color, 1.0);
   }
 }
