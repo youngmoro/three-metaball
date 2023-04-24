@@ -1,5 +1,5 @@
 import { Sky } from "@react-three/drei";
-import { useThree } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import GUI from "lil-gui";
 import React, { useEffect, useRef, useState } from "react";
 import Metaball from "./Metaball";
@@ -23,6 +23,9 @@ export const Sketch = () => {
     elementRef.current = new Metaball(scene);
   }, []);
 
+  useFrame(() => {
+    elementRef.current?.update();
+  });
   // useEffect(() => {
   //   elementRef.current?.update();
   // }, [radius]);
