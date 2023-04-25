@@ -5,7 +5,7 @@ uniform vec3 sphereColor;
 varying vec3 vNormal;
 varying float vDiscard;
 
-const vec3 LIGHT_DIR = normalize(vec3(1.0, 1.0, 1.0));
+const vec3 LIGHT_DIR = normalize(vec3(1.0, 1.0, -1.0));
 
 void main(void) {
   if (vDiscard == 1.0) {

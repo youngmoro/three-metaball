@@ -221,7 +221,6 @@ export default class Metaball {
   margingSpaceSize: number = 64; // マーチングキューブのスペースのサイズ
   numSpheres: number = 6; // メタボールの数
   smoothUnionValue: number = 6; // メタボールの結合の度合い
-  sphereColor: number[] = [255, 0, 0]; // メタボールの色
   texture = new THREE.DataTexture(
     new Uint8Array(TRI_TABLE),
     4096,
@@ -244,11 +243,7 @@ export default class Metaball {
           value: this.texture,
         },
         sphereColor: {
-          value: new THREE.Color(
-            this.sphereColor[0] / 255,
-            this.sphereColor[1] / 255,
-            this.sphereColor[2] / 255
-          ),
+          value: new THREE.Color(50 / 255, 100 / 255, 255 / 255),
         },
         time: { value: 0 },
         effectValue: { value: 0.5 },
