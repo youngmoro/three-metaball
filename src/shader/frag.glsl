@@ -7,6 +7,9 @@ varying float vDiscard;
 
 const vec3 LIGHT_DIR = normalize(vec3(1.0, 1.0, 1.0));
 
+uniform sampler2D triTableTexture;
+varying vec2 vpos;
+
 void main(void) {
   if (vDiscard == 1.0) {
     discard;
@@ -14,6 +17,8 @@ void main(void) {
     vec3 normal = normalize(vNormal);
 
     vec3 color = sphereColor * max(0.0, dot(LIGHT_DIR, normal));
-    gl_FragColor = vec4(color, 1.0);
+    // gl_FragColor = vec4(color, 1.0);
   }
+
+gl_FragColor = vec4(texture2D(triTableTexture, vpos));
 }
