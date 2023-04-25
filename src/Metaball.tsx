@@ -211,15 +211,6 @@ const TRI_TABLE = [
   255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
 ];
 
-const w = 32;
-
-const l = Math.pow(w, 2) * 4;
-const data = new Uint8Array(l);
-
-for (let i = 0; i < l; i++) {
-  data[i] = Math.random() * 255;
-}
-
 export default class Metaball {
   mesh: THREE.Mesh;
   geo: THREE.BufferGeometry = new THREE.BufferGeometry();
@@ -232,11 +223,10 @@ export default class Metaball {
   smoothUnionValue: number = 6; // メタボールの結合の度合い
   sphereColor: number[] = [255, 0, 0]; // メタボールの色
   texture = new THREE.DataTexture(
-    // new Uint8Array(TRI_TABLE),
-    data,
-    w,
-    w
-    // THREE.AlphaFormat
+    new Uint8Array(TRI_TABLE),
+    4096,
+    1,
+    THREE.RedFormat
   );
 
   constructor(scene: THREE.Scene) {
@@ -285,8 +275,7 @@ export default class Metaball {
     const size = this.margingSpaceSize / this.numMarchingSegments;
     const cellSize = new THREE.Vector3(size, size, size);
 
-    // const numVertices = numCells.x * numCells.y * numCells.z * 15; // 1セルの頂点の数は15個
-    const numVertices = Math.pow(32, 3); // 1セルの頂点の数は15個
+    const numVertices = Math.pow(this.numMarchingSegments, 3) * 15; // 1セルの頂点の数は15個
 
     this.geo.dispose();
     this.geo = new THREE.BufferGeometry();
@@ -295,13 +284,7 @@ export default class Metaball {
     const vertices = [];
     const vertexIndices = [];
     for (let i = 0; i < numVertices; i++) {
-      vertices.push(Math.random());
-      vertices.push(Math.random());
-      vertices.push(Math.random());
-      // vertices.push(0);
-      // vertices.push(0);
-      // vertices.push(0);
-
+      for (let j = 0; j < 3; j++) vertices.push(0);
       vertexIndices.push(i);
     }
 
@@ -337,7 +320,7 @@ export default class Metaball {
   }
 
   update() {
-    this.time += 1;
+    this.time += 10;
     this.mat.uniforms.time.value = this.time;
   }
 }

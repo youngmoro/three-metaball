@@ -15,8 +15,6 @@ uniform vec4 randomValues[NUM_SPHERES];
 varying vec3 vNormal;
 varying float vDiscard;
 
-varying vec2 vpos;
-
 const float PI = 3.1415926535897932384626433832795;
 const float PI2 = PI * 2.0;
 const vec3 AXIS_X = vec3(1.0, 0.0, 0.0);
@@ -162,11 +160,8 @@ void main(){
 
   // 続いて現在の頂点がどの辺上に配置されるかを調べる
   // つまり、ルックアップテーブルのどの値を参照するかのインデックスを求める
-  // float edgeIndex = texture2D(triTableTexture, vec2((cubeIndex * 16.0 + vertexIdInCell) / 4096.0, 0.0)).a * 255.0;
-  // float edgeIndex = texture2D(triTableTexture, vec2((cubeIndex * 16.0 + vertexIdInCell) / 4096.0, 0.0)).b * 255.0;
-  float edgeIndex = texture2D(triTableTexture, vec2(0., 0.)).a * 255.0;
+  float edgeIndex = texture2D(triTableTexture, vec2((cubeIndex * 16.0 + vertexIdInCell) / 4096.0, 0.0)).r * 255.0;
   vec3 pos = position;
-  //edgeIndexが0にしかなってないっぽい
   
   vDiscard = 0.0;
   if(edgeIndex == 255.0) {
@@ -205,6 +200,5 @@ void main(){
 //   vec3 effectSize = cellSize * 1.5;
 //   pos = mix(pos, floor(pos / effectSize + 0.5) * effectSize, effectValue);
 
-  vpos = position.xy;
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
 }
