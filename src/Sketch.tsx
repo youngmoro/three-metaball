@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Metaball from "./Metaball";
 
 export const Sketch = () => {
-  const { scene } = useThree();
+  const { scene, camera } = useThree();
   const [radius, setRadius] = useState(1);
 
   const params = {
@@ -16,6 +16,7 @@ export const Sketch = () => {
   const elementRef = useRef<Metaball>();
 
   useEffect(() => {
+    camera.position.set(0, 0, -50);
     // elementRef.current?.update(radius);
     const gui = new GUI();
     gui.add(params, "size", 0, 4).onChange((value: number) => setRadius(value));
