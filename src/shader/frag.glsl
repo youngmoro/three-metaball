@@ -1,6 +1,6 @@
 precision highp float;
 
-uniform vec3 sphereColor;
+uniform vec3 uColor;
 
 varying vec3 vNormal;
 varying float vDiscard;
@@ -13,7 +13,7 @@ void main(void) {
   } else {
     vec3 normal = normalize(vNormal);
 
-    vec3 color = sphereColor * max(0.0, dot(LIGHT_DIR, normal));
+    vec3 color = uColor * max(0.0, dot(LIGHT_DIR, normal));
     gl_FragColor = vec4(color, 1.0);
   }
 }

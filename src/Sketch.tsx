@@ -1,4 +1,4 @@
-import { Sky } from "@react-three/drei";
+import { Environment } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import GUI from "lil-gui";
 import React, { useEffect, useRef, useState } from "react";
@@ -33,7 +33,7 @@ export const Sketch = () => {
 
   return (
     <>
-      <Sky />
+      <Environment preset="park" background={true} />
     </>
   );
 };

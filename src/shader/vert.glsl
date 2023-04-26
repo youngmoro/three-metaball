@@ -2,15 +2,13 @@ precision highp float;
 
 attribute float vertexId;
 
-uniform float time;
-uniform vec3 numCells;
-uniform vec3 cellSize;
-uniform sampler2D triTableTexture;
-
-// uniform float effectValue;
-uniform float smoothUnionValue;
-
-uniform vec4 randomValues[NUM_SPHERES];
+uniform sampler2D uTexture;
+uniform float uLink;
+uniform float uTime;
+uniform vec3 uNumCell;
+uniform vec3 uCellSize;
+uniform vec4 uRandoms[NumBall];
+uniform float uEffect;
 
 varying vec3 vNormal;
 varying float vDiscard;
@@ -46,11 +44,11 @@ float sphere(vec3 p, float r) {
 }
 
 // メタボールをランダムに動かす
-float randomObj(vec3 p, int i, vec4 randomValues) {
-  float t = mod(time * 0.002 * (0.2 + randomValues.w) + randomValues.z * 100.0, PI2);
-  vec3 translate = (randomValues.xyz * 2.0 - 1.0) * 20.0 * sin(t);
-  float r = 6.0 + randomValues.x * 6.0;
-  float l = cellSize.x;
+float randomObj(vec3 p, int i, vec4 uRandoms) {
+  float t = mod(uTime * 0.002 * (0.2 + uRandoms.w) + uRandoms.z * 100.0, PI2);
+  vec3 translate = (uRandoms.xyz * 2.0 - 1.0) * 20.0 * sin(t);
+  float r = 6.0 + uRandoms.x * 6.0;
+  float l = uCellSize.x;
   p -= translate;
   return sphere(p, r);
 }
@@ -64,16 +62,16 @@ float opSmoothUnion(float d1, float d2, float k) {
 // 最終的な距離関数
 float getDistance(vec3 p) {
   // 適当に回転
-  float theta = mod(time * 0.001, PI2);
+  float theta = mod(uTime * 0.001, PI2);
   p = rotateVec3(p, theta, AXIS_Z);
   p = rotateVec3(p, theta, AXIS_X);
 
   float result = 0.0;
   float d;
-  for(int i = 0; i < NUM_SPHERES; i++) {
-    d = randomObj(p, i, randomValues[i]);
+  for(int i = 0; i < NumBall; i++) {
+    d = randomObj(p, i, uRandoms[i]);
     if(result == 0.0) result = d;
-    result = opSmoothUnion(result, d, smoothUnionValue);
+    result = opSmoothUnion(result, d, uLink);
   }
 
   return result;
@@ -117,23 +115,23 @@ void main(){
 
   // セルの基準点を算出
   vec3 cellIndices = vec3(
-    mod(cellId, numCells.x),
-    mod(cellId, (numCells.x * numCells.y)) / numCells.x,
-    cellId / (numCells.x * numCells.y)
+    mod(cellId, uNumCell.x),
+    mod(cellId, (uNumCell.x * uNumCell.y)) / uNumCell.x,
+    cellId / (uNumCell.x * uNumCell.y)
   );
   cellIndices = floor(cellIndices);
 
   // セルの基準点 (立方体の向かって左下奥)
-  vec3 c0 = (0.5 * numCells - cellIndices) * cellSize;
+  vec3 c0 = (0.5 * uNumCell - cellIndices) * uCellSize;
 
   // セルの各頂点
-  vec3 c1 = c0 + cellSize * vec3(1.0, 0.0, 0.0);
-  vec3 c2 = c0 + cellSize * vec3(1.0, 0.0, 1.0);
-  vec3 c3 = c0 + cellSize * vec3(0.0, 0.0, 1.0);
-  vec3 c4 = c0 + cellSize * vec3(0.0, 1.0, 0.0);
-  vec3 c5 = c0 + cellSize * vec3(1.0, 1.0, 0.0);
-  vec3 c6 = c0 + cellSize * vec3(1.0, 1.0, 1.0);
-  vec3 c7 = c0 + cellSize * vec3(0.0, 1.0, 1.0);
+  vec3 c1 = c0 + uCellSize * vec3(1.0, 0.0, 0.0);
+  vec3 c2 = c0 + uCellSize * vec3(1.0, 0.0, 1.0);
+  vec3 c3 = c0 + uCellSize * vec3(0.0, 0.0, 1.0);
+  vec3 c4 = c0 + uCellSize * vec3(0.0, 1.0, 0.0);
+  vec3 c5 = c0 + uCellSize * vec3(1.0, 1.0, 0.0);
+  vec3 c6 = c0 + uCellSize * vec3(1.0, 1.0, 1.0);
+  vec3 c7 = c0 + uCellSize * vec3(0.0, 1.0, 1.0);
 
   // セルの各頂点のボクセル値を求める (ボクセル値はメタボールまでの距離)
   float v0 = getDistance(c0);
@@ -160,13 +158,11 @@ void main(){
 
   // 続いて現在の頂点がどの辺上に配置されるかを調べる
   // つまり、ルックアップテーブルのどの値を参照するかのインデックスを求める
-  float edgeIndex = texture2D(triTableTexture, vec2((cubeIndex * 16.0 + vertexIdInCell) / 4096.0, 0.0)).r * 255.0;
+  float edgeIndex = texture2D(uTexture, vec2((cubeIndex * 16.0 + vertexIdInCell) / 4096.0, 0.0)).r * 255.0;
   vec3 pos = position;
   
   vDiscard = 0.0;
   if(edgeIndex == 255.0) {
-    // edgeIndexが255の場合、頂点は破棄
-    vNormal = vec3(0.0, 0.0, 1.0);
     vDiscard = 1.0;
   } else if (edgeIndex == 0.0) {
     pos = interpolate(c0, c1, v0, v1);
@@ -197,8 +193,7 @@ void main(){
   vNormal = getNormal(pos);
 
   // エフェクト
-//   vec3 effectSize = cellSize * 1.5;
-//   pos = mix(pos, floor(pos / effectSize + 0.5) * effectSize, effectValue);
-
+//   vec3 effectSize = uCellSize * 1.5;
+//   pos = mix(pos, floor(pos / effectSize + 0.5) * effectSize, uEffect);
   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
 }

@@ -216,12 +216,10 @@ export default class Metaball {
   geo: THREE.BufferGeometry = new THREE.BufferGeometry();
   mat: THREE.ShaderMaterial;
 
-  time: number = 0;
-  numMarchingSegments: number = 30; // セルの分割数
-  margingSpaceSize: number = 64; // マーチングキューブのスペースのサイズ
-  numSpheres: number = 6; // メタボールの数
-  smoothUnionValue: number = 6; // メタボールの結合の度合い
-  texture = new THREE.DataTexture(
+  NumBall: number = 6;
+  uTime: number = 0;
+  uLink: number = 6;
+  uTexture = new THREE.DataTexture(
     new Uint8Array(TRI_TABLE),
     4096,
     1,
@@ -229,52 +227,49 @@ export default class Metaball {
   );
 
   constructor(scene: THREE.Scene) {
-    this.texture.minFilter = THREE.NearestFilter;
-    this.texture.magFilter = THREE.NearestFilter;
-    this.texture.needsUpdate = true;
+    this.uTexture.minFilter = THREE.NearestFilter;
+    this.uTexture.magFilter = THREE.NearestFilter;
+    this.uTexture.needsUpdate = true;
 
     this.mat = new THREE.ShaderMaterial({
       fragmentShader: frag,
       vertexShader: vert,
       side: THREE.DoubleSide,
-      defines: { NUM_SPHERES: this.numSpheres },
+      defines: { NumBall: this.NumBall },
       uniforms: {
-        triTableTexture: {
-          value: this.texture,
+        uColor: {
+          value: new THREE.Color(0.2, 0.4, 1),
         },
-        sphereColor: {
-          value: new THREE.Color(50 / 255, 100 / 255, 255 / 255),
+        uTexture: {
+          value: this.uTexture,
         },
-        time: { value: 0 },
-        effectValue: { value: 0.5 },
-        smoothUnionValue: { value: this.smoothUnionValue },
-        numCells: { value: new THREE.Vector3(30, 30, 30) },
-        cellSize: { value: new THREE.Vector3(64 / 30, 64 / 30, 64 / 30) },
-        randomValues: { value: [] },
+        uLink: { value: this.uLink },
+        uTime: { value: 0 },
+        uEffect: { value: 0 },
+        uNumCell: { value: new THREE.Vector3(30, 30, 30) },
+        uCellSize: { value: new THREE.Vector3(2, 2, 2) },
+        uRandoms: {
+          value: Array.from(
+            { length: this.NumBall },
+            () =>
+              new THREE.Vector4(
+                Math.random(),
+                Math.random(),
+                Math.random(),
+                Math.random()
+              )
+          ),
+        },
       },
     });
 
     this.mesh = new THREE.Mesh(this.geo, this.mat);
     this.updateMargingCubesSpace();
-    this.updateNumSpheres();
     scene.add(this.mesh);
   }
 
-  // マーチングキューブ空間のアップデート
   updateMargingCubesSpace() {
-    const numCells = new THREE.Vector3(
-      this.numMarchingSegments,
-      this.numMarchingSegments,
-      this.numMarchingSegments
-    );
-    const size = this.margingSpaceSize / this.numMarchingSegments;
-    const cellSize = new THREE.Vector3(size, size, size);
-
-    const numVertices = Math.pow(this.numMarchingSegments, 3) * 15; // 1セルの頂点の数は15個
-
-    this.geo.dispose();
-    this.geo = new THREE.BufferGeometry();
-    this.mesh.geometry = this.geo;
+    const numVertices = Math.pow(30, 3) * 15; // 1セルの頂点の数は15個
 
     const vertices = [];
     const vertexIndices = [];
@@ -292,30 +287,10 @@ export default class Metaball {
       "vertexId",
       new THREE.BufferAttribute(new Float32Array(vertexIndices), 1)
     );
-
-    this.mat.uniforms.numCells.value = numCells;
-    this.mat.uniforms.cellSize.value = cellSize;
-  }
-
-  updateNumSpheres() {
-    const randomValues = [];
-    for (let i = 0; i < this.numSpheres; i++) {
-      randomValues.push(
-        new THREE.Vector4(
-          Math.random(),
-          Math.random(),
-          Math.random(),
-          Math.random()
-        )
-      );
-    }
-    this.mat.defines.NUM_SPHERES = this.numSpheres;
-    this.mat.uniforms.randomValues.value = randomValues;
-    this.mat.needsUpdate = true;
   }
 
   update() {
-    this.time += 10;
-    this.mat.uniforms.time.value = this.time;
+    this.uTime += 10;
+    this.mat.uniforms.uTime.value = this.uTime;
   }
 }
