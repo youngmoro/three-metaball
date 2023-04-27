@@ -243,6 +243,7 @@ export default class Metaball {
         uTexture: {
           value: this.uTexture,
         },
+        uRadius: { value: 4 },
         uLink: { value: 4 },
         uTime: { value: 0 },
         uNumCell: { value: this.uNumCell },
@@ -280,5 +281,34 @@ export default class Metaball {
   update() {
     this.uTime += 1;
     this.mat.uniforms.uTime.value = this.uTime;
+  }
+
+  updateNumBall(numBall: number) {
+    this.mat.defines.NumBall = numBall;
+    this.mat.uniforms.uInitialPos.value = Array.from(
+      { length: numBall },
+      () => new THREE.Vector3(Math.random(), Math.random(), Math.random())
+    );
+    this.mat.needsUpdate = true;
+  }
+
+  updateLink(link: number) {
+    this.mat.uniforms.uLink.value = link;
+  }
+
+  updateWireframe(isWire: boolean) {
+    this.mat.wireframe = isWire;
+  }
+
+  updateRadius(radius: number) {
+    this.mat.uniforms.uRadius.value = radius;
+  }
+
+  updateColor(color: number[]) {
+    this.mat.uniforms.uColor.value = new THREE.Color(
+      color[0],
+      color[1],
+      color[2]
+    );
   }
 }

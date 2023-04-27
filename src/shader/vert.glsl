@@ -3,11 +3,12 @@ precision highp float;
 attribute float vertexId;
 
 uniform sampler2D uTexture;
+uniform float uRadius;
 uniform float uLink;
-uniform float uTime;
 uniform float uNumCell;
 uniform float uCellSize;
 uniform vec3 uInitialPos[NumBall];
+uniform float uTime;
 
 varying vec3 vNormal;
 varying float vDiscard;
@@ -45,10 +46,8 @@ float move(vec3 p, int i) {
 
   float t = mod(uTime * 0.02 + uInitialPos[i].z * 10.0, PI2);
   p -= uInitialPos[i] * 10. * sin(t);
-  // p -= uInitialPos[i] * 10.;
-  float r = 4.;
 
-  return length(p) - r;//球の距離関数
+  return length(p) - uRadius;//球の距離関数
 }
 
 float opSmoothUnion(float d1, float d2) {
