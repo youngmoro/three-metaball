@@ -7,10 +7,10 @@ function App() {
     <div className="App">
       <div>
         <img src="/vite.svg" className="logo" alt="Vite logo" />
-        <img src="/react.svg" className="logo react" alt="React logo" />
-        <img src="/three.png" className="logo" alt="Three logo" />
-        <h2>Vite + React + Three</h2>
+        <img src="/react.svg" className="logo" alt="React logo" />
+        <img src="/three.png" className="logo three" alt="Three logo" />
       </div>
+      <h2>Metaballs with Marching Cubes</h2>
       <div className="canvas">
         <Canvas className="canvas">
           <Sketch />
