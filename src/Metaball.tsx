@@ -218,7 +218,6 @@ export default class Metaball {
 
   NumBall: number = 6;
   uTime: number = 0;
-  uLink: number = 6;
   uTexture = new THREE.DataTexture(
     new Uint8Array(TRI_TABLE),
     4096,
@@ -238,59 +237,47 @@ export default class Metaball {
       defines: { NumBall: this.NumBall },
       uniforms: {
         uColor: {
-          value: new THREE.Color(0.2, 0.4, 1),
+          value: new THREE.Color(0.9, 0.8, 1),
         },
         uTexture: {
           value: this.uTexture,
         },
-        uLink: { value: this.uLink },
+        uLink: { value: 4 },
         uTime: { value: 0 },
-        uEffect: { value: 0 },
-        uNumCell: { value: new THREE.Vector3(30, 30, 30) },
+        uNumCell: { value: new THREE.Vector3(20, 20, 20) },
         uCellSize: { value: new THREE.Vector3(2, 2, 2) },
         uRandoms: {
           value: Array.from(
             { length: this.NumBall },
-            () =>
-              new THREE.Vector4(
-                Math.random(),
-                Math.random(),
-                Math.random(),
-                Math.random()
-              )
+            () => new THREE.Vector3(Math.random(), Math.random(), Math.random())
           ),
         },
       },
     });
 
     this.mesh = new THREE.Mesh(this.geo, this.mat);
-    this.updateMargingCubesSpace();
+    this.setSpace();
     scene.add(this.mesh);
   }
 
-  updateMargingCubesSpace() {
+  setSpace() {
     const numVertices = Math.pow(30, 3) * 15; // 1セルの頂点の数は15個
 
-    const vertices = [];
-    const vertexIndices = [];
+    const vertices = new Float32Array(numVertices * 3).fill(0);
+    const vertexIndices = new Float32Array(numVertices);
     for (let i = 0; i < numVertices; i++) {
-      for (let j = 0; j < 3; j++) vertices.push(0);
-      vertexIndices.push(i);
+      vertexIndices[i] = i;
     }
 
-    this.geo.setAttribute(
-      "position",
-      new THREE.BufferAttribute(new Float32Array(vertices), 3)
-    );
-
+    this.geo.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
     this.geo.setAttribute(
       "vertexId",
-      new THREE.BufferAttribute(new Float32Array(vertexIndices), 1)
+      new THREE.BufferAttribute(vertexIndices, 1)
     );
   }
 
   update() {
-    this.uTime += 10;
+    this.uTime += 1;
     this.mat.uniforms.uTime.value = this.uTime;
   }
 }
