@@ -224,6 +224,7 @@ export default class Metaball {
     1,
     THREE.RedFormat
   );
+  uNumCell: number = 30;
 
   constructor(scene: THREE.Scene) {
     this.uTexture.minFilter = THREE.NearestFilter;
@@ -244,9 +245,9 @@ export default class Metaball {
         },
         uLink: { value: 4 },
         uTime: { value: 0 },
-        uNumCell: { value: new THREE.Vector3(20, 20, 20) },
-        uCellSize: { value: new THREE.Vector3(2, 2, 2) },
-        uRandoms: {
+        uNumCell: { value: this.uNumCell },
+        uCellSize: { value: 2 },
+        uInitialPos: {
           value: Array.from(
             { length: this.NumBall },
             () => new THREE.Vector3(Math.random(), Math.random(), Math.random())
@@ -261,7 +262,7 @@ export default class Metaball {
   }
 
   setSpace() {
-    const numVertices = Math.pow(30, 3) * 15; // 1セルの頂点の数は15個
+    const numVertices = Math.pow(this.uNumCell, 3) * 15; // 1セルの頂点の数は15個
 
     const vertices = new Float32Array(numVertices * 3).fill(0);
     const vertexIndices = new Float32Array(numVertices);

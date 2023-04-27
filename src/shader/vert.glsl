@@ -5,9 +5,9 @@ attribute float vertexId;
 uniform sampler2D uTexture;
 uniform float uLink;
 uniform float uTime;
-uniform vec3 uNumCell;
-uniform vec3 uCellSize;
-uniform vec3 uRandoms[NumBall];
+uniform float uNumCell;
+uniform float uCellSize;
+uniform vec3 uInitialPos[NumBall];
 
 varying vec3 vNormal;
 varying float vDiscard;
@@ -43,12 +43,12 @@ float move(vec3 p, int i) {
   p = rotateVec3(p, theta, AXIS_Z);
   p = rotateVec3(p, theta, AXIS_X);
 
-  float t = mod(uTime * 0.02 + uRandoms[i].z * 10.0, PI2);
-  p -= uRandoms[i] * 20.0 * sin(t);
+  float t = mod(uTime * 0.02 + uInitialPos[i].z * 10.0, PI2);
+  p -= uInitialPos[i] * 10. * sin(t);
+  // p -= uInitialPos[i] * 10.;
+  float r = 4.;
 
-  float r = 7.0;
-
-  return length(p) - r;
+  return length(p) - r;//球の距離関数
 }
 
 float opSmoothUnion(float d1, float d2) {
@@ -99,14 +99,14 @@ void main(){
 
   // セルの基準点を算出
   vec3 cellIndices = vec3(
-    mod(cellId, uNumCell.x),
-    mod(cellId, (uNumCell.x * uNumCell.y)) / uNumCell.x,
-    cellId / (uNumCell.x * uNumCell.y)
+    mod(cellId, uNumCell),
+    mod(cellId, (uNumCell * uNumCell)) / uNumCell,
+    cellId / (uNumCell * uNumCell)
   );
   cellIndices = floor(cellIndices);
 
   // セルの基準点 (立方体の向かって左下奥)
-  vec3 c0 = (0.5 * uNumCell - cellIndices) * uCellSize;
+  vec3 c0 = (0.5 * vec3(uNumCell) - cellIndices) * uCellSize;
 
   vec3 c1 = c0 + uCellSize * vec3(1.0, 0.0, 0.0);
   vec3 c2 = c0 + uCellSize * vec3(1.0, 0.0, 1.0);
