@@ -1,6 +1,7 @@
 import { TrackballControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { Sketch } from "./Sketch";
+import { MetaballGLSL } from "./MetaballGLSL";
+import { MetaballThree } from "./MetaballThree";
 
 function App() {
   return (
@@ -13,8 +14,9 @@ function App() {
       <h2>Metaballs with Marching Cubes</h2>
       <div className="canvas">
         <Canvas className="canvas">
-          <Sketch />
           <TrackballControls />
+          {/* <MetaballGLSL /> */}
+          <MetaballThree />
         </Canvas>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import * as THREE from "three";
-import frag from "./shader/frag.glsl?raw";
-import vert from "./shader/vert.glsl?raw";
+import frag from "../shader/frag.glsl?raw";
+import vert from "../shader/vert.glsl?raw";
 
 const TRI_TABLE = [
   255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
@@ -224,7 +224,8 @@ export default class Metaball {
     1,
     THREE.RedFormat
   );
-  uNumCell: number = 30;
+  numCell: number = 30;
+  cellSize: number = 2;
 
   constructor(scene: THREE.Scene) {
     this.uTexture.minFilter = THREE.NearestFilter;
@@ -246,8 +247,8 @@ export default class Metaball {
         uRadius: { value: 4 },
         uLink: { value: 4 },
         uTime: { value: 0 },
-        uNumCell: { value: this.uNumCell },
-        uCellSize: { value: 2 },
+        uNumCell: { value: this.numCell },
+        uCellSize: { value: this.cellSize },
         uInitialPos: {
           value: Array.from(
             { length: this.NumBall },
@@ -258,12 +259,12 @@ export default class Metaball {
     });
 
     this.mesh = new THREE.Mesh(this.geo, this.mat);
-    this.setSpace();
+    this.setSpace(this.numCell);
     scene.add(this.mesh);
   }
 
-  setSpace() {
-    const numVertices = Math.pow(this.uNumCell, 3) * 15; // 1セルの頂点の数は15個
+  setSpace(numCell: number) {
+    const numVertices = Math.pow(numCell, 3) * 15; // 1セルの頂点の数は15個
 
     const vertices = new Float32Array(numVertices * 3).fill(0);
     const vertexIndices = new Float32Array(numVertices);
@@ -310,5 +311,14 @@ export default class Metaball {
       color[1],
       color[2]
     );
+  }
+
+  updateNumCell(numCell: number) {
+    this.mat.uniforms.uNumCell.value = numCell;
+    this.setSpace(numCell);
+  }
+
+  updateCellSize(cellSize: number) {
+    this.mat.uniforms.uCellSize.value = cellSize;
   }
 }
